@@ -77,7 +77,6 @@
     <button class="btn-liga" onclick="cambiarLiga('liga04', this)">LIGA 04</button>
     <button class="btn-liga" onclick="cambiarLiga('liga05', this)">LIGA 05</button>
     <button class="btn-liga" onclick="cambiarLiga('liga06', this)">LIGA 06</button>
-    <button class="btn-liga" onclick="cambiarLiga('ranking-global', this)">RANKING GLOBAL</button>
   </div>
 
 <!-- LIGA 01 (dinámica, como LIGA 03) -->
@@ -1387,15 +1386,6 @@
     <div class="clasificacion-container"><h3 style="text-align:center; color:#2c3e50; margin-bottom:10px">Tabla de Clasificación</h3><table class="tabla-clasificacion"><thead><tr style="background:#e74c3c; color:black"><th>Pos</th><th>Pareja</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>Puntos</th></tr></thead><tbody id="cuerpo-tabla-liga06"></tbody></table><p style="text-align:center; margin-top:12px"><button onclick="generarClasificacion('liga06')" class="btn-guardar" style="width:auto; background:#3498db">Recalcular Clasificación</button></p></div>
   </div>
 
-  <!-- RANKING GLOBAL INDIVIDUAL -->
-  <div id="ranking-global" class="liga-section">
-    <h2 class="section-title" style="color:#8e44ad">RANKING GLOBAL INDIVIDUAL</h2>
-    <div class="clasificacion-container">
-      <p style="text-align:center; color:#666; margin-bottom:12px">Suma de puntos obtenidos en todas las ligas (L01, L02, L03, L04, L05, L06).</p>
-      <table class="tabla-clasificacion"><thead><tr style="background:#8e44ad; color:black"><th>Pos</th><th>Jugador</th><th>Puntos</th><th>PJ</th><th>% Victorias</th></tr></thead><tbody id="cuerpo-tabla-global"></tbody></table>
-      <p style="text-align:center; margin-top:12px"><button onclick="generarRankingIndividual()" class="btn-guardar" style="width:auto; background:#8e44ad">Actualizar Ranking</button></p>
-    </div>
-  </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1407,11 +1397,7 @@
     firebase.initializeApp(firebaseConfig);
     const database=firebase.database();
 
-    // Ligas estáticas
-    const liga01Data=[{nombre:"MIGUEL y ROMAN",pj:6,pg:5,pe:0,pp:1,pto:5},{nombre:"IVAN y JUST",pj:6,pg:5,pe:0,pp:1,pto:5},{nombre:"JORGE y DANI",pj:6,pg:1,pe:0,pp:5,pto:1},{nombre:"PABLO y CARLOS",pj:6,pg:1,pe:0,pp:5,pto:1}];
-    const liga02Data=[{nombre:"CARLOS y ROMAN",pj:6,pg:6,pe:0,pp:0,pto:6},{nombre:"JORGE y IVAN",pj:6,pg:3,pe:0,pp:3,pto:3},{nombre:"PABLO y MIGUEL",pj:6,pg:2,pe:0,pp:4,pto:2},{nombre:"JUST y DANI",pj:6,pg:1,pe:0,pp:5,pto:1}];
-
-    // Helpers de posiciones densas y estilos
+      // Helpers de posiciones densas y estilos
     function asignarPosicionesDensas(items,key){let pos=0,last=null;items.forEach(it=>{const pts=Number(it[key]);if(last===null||pts!==last){pos+=1;last=pts;}it.posicion=pos;});return items;}
     function medallaPorPos(p){ if(p===1) return '🥇'; if(p===2) return '🥈'; if(p===3) return '🥉'; return ''; }
     function estiloFilaPorPos(p){ if(p===1) return 'background:linear-gradient(90deg,#f1c40f,#f39c12);color:#fff;font-weight:800;'; if(p===2) return 'background:linear-gradient(90deg,#95a5a6,#7f8c8d);color:#fff;font-weight:800;'; if(p===3) return 'background:linear-gradient(90deg,#cd7f32,#b8860b);color:#fff;font-weight:800;'; return ''; }
