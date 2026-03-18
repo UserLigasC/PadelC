@@ -1404,93 +1404,118 @@
         .then(()=>{ const sec=c.closest('.liga-section'); if(sec && sec.id!=='ranking-global') setTimeout(()=>generarClasificacion(sec.id),350); })
         .catch(e=>alert('❌ Error: '+e.message));
     }
+// Clasificación dinámica (por ID de pareja en data-pairid)
+    function generarClasificacion(ligaId) {
+      // ELIMINADO EL BLOQUEO DE LIGA01 Y LIGA02 PARA QUE FUNCIONEN
+      const root = document.getElementById(ligaId); 
+      if (!root) return;
+      
+      const partidos = root.querySelectorAll('.partido');
+      const est = {}; // key = pairId (ej: L1-PAR-01)
 
-    // Clasificación dinámica (por ID de pareja en data-pairid)
-    function generarClasificacion(ligaId){
-      if(ligaId==='liga01'||ligaId==='liga02') return;
-      const root=document.getElementById(ligaId); if(!root) return;
-      const partidos=root.querySelectorAll('.partido');
-      const est={}; // key = pairId
+      partidos.forEach(p => {
+        const a = p.querySelector('.nombre1'), b = p.querySelector('.nombre2'); 
+        if (!a || !b) return;
+        
+        const pair1Id = (a.dataset.pairid || '').trim();
+        const pair2Id = (b.dataset.pairid || '').trim();
+        if (!pair1Id || !pair2Id) return;
 
-      partidos.forEach(p=>{
-        const a=p.querySelector('.nombre1'), b=p.querySelector('.nombre2'); if(!a||!b) return;
-        const pair1Id=(a.dataset.pairid||'').trim();
-        const pair2Id=(b.dataset.pairid||'').trim();
-        if(!pair1Id||!pair2Id) return;
+        // Nombre visible actual (ej: N1 BLL Pareja 3 (C-M))
+        const name1 = a.innerText.trim();
+        const name2 = b.innerText.trim();
 
-        // Nombre visible actual (para mostrar y guardar)
-        const name1=a.innerText.trim();
-        const name2=b.innerText.trim();
+        if (!est[pair1Id]) est[pair1Id] = { pj: 0, pg: 0, pe: 0, pp: 0, puntos: 0, nombre: name1 };
+        if (!est[pair2Id]) est[pair2Id] = { pj: 0, pg: 0, pe: 0, pp: 0, puntos: 0, nombre: name2 };
 
-        if(!est[pair1Id]) est[pair1Id]={pj:0,pg:0,pe:0,pp:0,puntos:0,nombre:name1};
-        if(!est[pair2Id]) est[pair2Id]={pj:0,pg:0,pe:0,pp:0,puntos:0,nombre:name2};
-
-        let sp1=0,sp2=0,comp=0;
-        for(let i=1;i<=3;i++){
-          const e1=p.querySelector('.p1-s'+i), e2=p.querySelector('.p2-s'+i);
-          const v1=e1?parseInt(e1.value,10):NaN, v2=e2?parseInt(e2.value,10):NaN;
-          if(!isNaN(v1)&&!isNaN(v2)){ comp++; if(v1>v2) sp1++; else if(v2>v1) sp2++; }
+        let sp1 = 0, sp2 = 0, comp = 0;
+        for (let i = 1; i <= 3; i++) {
+          const e1 = p.querySelector('.p1-s' + i), e2 = p.querySelector('.p2-s' + i);
+          const v1 = e1 ? parseInt(e1.value, 10) : NaN, v2 = e2 ? parseInt(e2.value, 10) : NaN;
+          if (!isNaN(v1) && !isNaN(v2)) { 
+            comp++; 
+            if (v1 > v2) sp1++; else if (v2 > v1) sp2++; 
+          }
         }
-        if(comp>0){
+        
+        if (comp > 0) {
           est[pair1Id].pj++; est[pair2Id].pj++;
-          if(sp1>sp2){ est[pair1Id].pg++; est[pair1Id].puntos+=1; est[pair2Id].pp++; }
-          else if(sp2>sp1){ est[pair2Id].pg++; est[pair2Id].puntos+=1; est[pair1Id].pp++; }
-          else { est[pair1Id].pe++; est[pair2Id].pe++; est[pair1Id].puntos+=0.5; est[pair2Id].puntos+=0.5; }
+          if (sp1 > sp2) { 
+            est[pair1Id].pg++; est[pair1Id].puntos += 1; est[pair2Id].pp++; 
+          } else if (sp2 > sp1) { 
+            est[pair2Id].pg++; est[pair2Id].puntos += 1; est[pair1Id].pp++; 
+          } else { 
+            est[pair1Id].pe++; est[pair2Id].pe++; 
+            est[pair1Id].puntos += 0.5; est[pair2Id].puntos += 0.5; 
+          }
         }
       });
 
-      const ranking=Object.keys(est).map(id=>({pairId:id, ...est[id]})).sort((x,y)=>{
-        if(y.puntos!==x.puntos) return y.puntos-x.puntos;
-        if(y.pg!==x.pg) return y.pg-x.pg;
-        const da=x.pg-x.pp, db=y.pg-y.pp; return db-da;
+      const ranking = Object.keys(est).map(id => ({ pairId: id, ...est[id] })).sort((x, y) => {
+        if (y.puntos !== x.puntos) return y.puntos - x.puntos;
+        if (y.pg !== x.pg) return y.pg - x.pg;
+        const da = x.pg - x.pp, db = y.pg - y.pp; 
+        return db - da;
       });
-      asignarPosicionesDensas(ranking,'puntos');
+      
+      asignarPosicionesDensas(ranking, 'puntos');
 
-      // Pintar
-      const tb=document.getElementById('cuerpo-tabla-'+ligaId);
-      if(tb){
-        tb.innerHTML='';
-        ranking.forEach(p=>{
-          const tr=tb.insertRow(); const pos=p.posicion, med=medallaPorPos(pos);
-          tr.style.cssText=estiloFilaPorPos(pos);
-          tr.innerHTML=`<td class="posicion">${pos} ${med}</td>
-                        <td style="padding:10px;font-weight:800;">${p.nombre}</td>
-                        <td>${p.pj}</td><td>${p.pg}</td><td>${p.pe}</td><td>${p.pp}</td>
-                        <td style="font-weight:800">${p.puntos}</td>`;
+      // Pintar en la tabla correspondiente
+      const tb = document.getElementById('cuerpo-tabla-' + ligaId);
+      if (tb) {
+        tb.innerHTML = '';
+        ranking.forEach(p => {
+          const tr = tb.insertRow(); 
+          const pos = p.posicion, med = medallaPorPos(pos);
+          tr.style.cssText = estiloFilaPorPos(pos);
+          tr.innerHTML = `<td class="posicion">${pos} ${med}</td>
+                          <td style="padding:10px;font-weight:800;">${p.nombre}</td>
+                          <td>${p.pj}</td><td>${p.pg}</td><td>${p.pe}</td><td>${p.pp}</td>
+                          <td style="font-weight:800">${p.puntos}</td>`;
         });
       }
 
-      // Guardar por pairId
-      const save={}; ranking.forEach(p=> save[p.pairId]={nombre:p.nombre,pj:p.pj,pg:p.pg,pe:p.pe,pp:p.pp,puntos:p.puntos});
-      database.ref('clasificacion/'+ligaId).set(save).catch(()=>{});
+      // Guardar de forma persistente en Firebase por pairId
+      const save = {}; 
+      ranking.forEach(p => save[p.pairId] = { nombre: p.nombre, pj: p.pj, pg: p.pg, pe: p.pe, pp: p.pp, puntos: p.puntos });
+      database.ref('clasificacion/' + ligaId).set(save).catch(() => {});
     }
 
-    // Carga clasificación (lee por pairId y usa el 'nombre' guardado)
-    function cargarClasificacion(ligaId){
-      if(ligaId==='liga01'){ return pintarEstatico('cuerpo-tabla-liga01', liga01Data); }
-      if(ligaId==='liga02'){ return pintarEstatico('cuerpo-tabla-liga02', liga02Data); }
-      const tb=document.getElementById('cuerpo-tabla-'+ligaId); if(!tb) return; tb.innerHTML='';
-      database.ref('clasificacion/'+ligaId).once('value').then(s=>{
-        const data=s.val(); if(!data) return;
-        const ranking=Object.keys(data).map(pairId=>{
-          const it=data[pairId];
+    // Carga clasificación dinámica para todas las ligas
+    function cargarClasificacion(ligaId) {
+      // ELIMINADO EL BLOQUEO ESTATICO DE LIGA01
+      const tb = document.getElementById('cuerpo-tabla-' + ligaId); 
+      if (!tb) return; 
+      
+      tb.innerHTML = '';
+      database.ref('clasificacion/' + ligaId).once('value').then(s => {
+        const data = s.val(); 
+        if (!data) return;
+        
+        const ranking = Object.keys(data).map(pairId => {
+          const it = data[pairId];
           return { pairId, nombre: it.nombre, pj: it.pj, pg: it.pg, pe: it.pe, pp: it.pp, puntos: it.puntos };
-        }).sort((x,y)=>{
-          if(y.puntos!==x.puntos) return y.puntos-x.puntos;
-          if(y.pg!==x.pg) return y.pg-x.pg;
-          const da=x.pg-x.pp, db=y.pg-y.pp; return db-da;
+        }).sort((x, y) => {
+          if (y.puntos !== x.puntos) return y.puntos - x.puntos;
+          if (y.pg !== x.pg) return y.pg - x.pg;
+          const da = x.pg - x.pp, db = y.pg - y.pp; 
+          return db - da;
         });
-        asignarPosicionesDensas(ranking,'puntos');
-        ranking.forEach(p=>{
-          const tr=tb.insertRow(); const pos=p.posicion, med=medallaPorPos(pos);
-          tr.style.cssText=estiloFilaPorPos(pos);
-          tr.innerHTML=`<td class="posicion">${pos} ${med}</td>
-                        <td style="padding:10px;font-weight:800;">${p.nombre}</td>
-                        <td>${p.pj}</td><td>${p.pg}</td><td>${p.pe}</td><td>${p.pp}</td>
-                        <td style="font-weight:800">${p.puntos}</td>`;
+
+        asignarPosicionesDensas(ranking, 'puntos');
+        
+        ranking.forEach(p => {
+          const tr = tb.insertRow(); 
+          const pos = p.posicion, med = medallaPorPos(pos);
+          tr.style.cssText = estiloFilaPorPos(pos);
+          tr.innerHTML = `<td class="posicion">${pos} ${med}</td>
+                          <td style="padding:10px;font-weight:800;">${p.nombre}</td>
+                          <td>${p.pj}</td><td>${p.pg}</td><td>${p.pe}</td><td>${p.pp}</td>
+                          <td style="font-weight:800">${p.puntos}</td>`;
         });
-      }).catch(()=>{});
+      }).catch(() => {});
     }
+
 
     function pintarEstatico(tbodyId, data){
       const tb=document.getElementById(tbodyId); if(!tb) return; tb.innerHTML='';
