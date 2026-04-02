@@ -187,9 +187,10 @@
 .nivel2 {
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;                /* ❗ No permitir que se haga más pequeño */
   align-items: center;
-  gap: 12px;
-  width: 100%;
+  gap: 6px;
+  width: 120px;
   flex-wrap: wrap;               /* ❗ No permitir que el nivel se rompa */
 }
 
