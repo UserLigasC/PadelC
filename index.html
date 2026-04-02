@@ -148,6 +148,31 @@
 .cal-dia-inactivo-modern {
   opacity: 0.2;
 }
+/* ✅ NIVEL 1 → Fecha + input + Guardar Fecha en una fila */
+.fecha-partido,
+.btn-guardar-fecha {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* Contenedor conjunto */
+.nivel1 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+/* ✅ NIVEL 2 → Sets + nombres + Guardar en otra fila */
+.nivel2 {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
 
 </style>
 </head>
@@ -3684,7 +3709,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // ✅ Crear automáticamente los botones "Guardar Fecha"
   insertarBotonesGuardarFecha();
 
+  
+/*  ✅ ✅ ✅ PEGAR AQUÍ EL BLOQUE DEL PASO 2 ✅ ✅ ✅
+      JUSTO ANTES DE LA LLAVE DE CIERRE DEL DOMCONTENTLOADED  */
+
+  document.querySelectorAll(".partido").forEach(p => {
+      const nivel1 = document.createElement("div");
+      nivel1.className = "nivel1";
+
+      const nivel2 = document.createElement("div");
+      nivel2.className = "nivel2";
+
+      const fecha = p.querySelector(".fecha-partido");
+      const btnFecha = p.querySelector(".btn-guardar-fecha");
+      const marcador = p.querySelector(".marcador");
+      const nombres = p.querySelector(".nombres");
+      const btnGuardar = p.querySelector(".btn-guardar");
+
+      // mover al nivel 1
+      if (fecha) nivel1.appendChild(fecha);
+      if (btnFecha) nivel1.appendChild(btnFecha);
+
+      // mover al nivel 2
+      if (marcador) nivel2.appendChild(marcador);
+      if (nombres) nivel2.appendChild(nombres);
+      if (btnGuardar) nivel2.appendChild(btnGuardar);
+
+      p.prepend(nivel1);   // nivel 1 arriba
+      p.appendChild(nivel2); // nivel 2 abajo
+  });
+
 });
+
+
   
 // Calendar functions
 let calInputActual = null;
