@@ -187,11 +187,10 @@
 .nivel2 {
   display: flex;
   flex-direction: row;
-  flex-shrink: 0;                /* ❗ No permitir que se haga más pequeño */
   align-items: center;
-  gap: 6px;
-  width: 120px;
-  flex-wrap: wrap;               /* ❗ No permitir que el nivel se rompa */
+  gap: 12px;
+  width: 100px;
+  flex-wrap: nowrap;               /* ❗ No permitir que el nivel se rompa */
 }
 
 /* Marcador con ancho fijo */
@@ -205,10 +204,11 @@
 .nivel2 .nombres {
   flex: 1;                         /* ❗ Esto permite que se adapte */
   display: flex;
+  etter-spacing: -0.8px !important;/* letras más juntas */
   flex-direction: column;
   text-align: left;
   word-break: break-word;          /* ❗ Permite salto interno controlado */
-  white-space: normal;             /* ❗ Nombres largos se rompen SOLO aquí */
+  white-space: nowrap;             
 }
 
 /* Botón guardar → Su propia fila */
