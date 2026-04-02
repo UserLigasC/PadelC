@@ -173,7 +173,38 @@
   gap: 20px;
   align-items: center;
 }
+/* Contenedor más estrecho para la fecha */
+.bloque-fecha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;        /* 👈 SE HACE TAN ESTRECHO COMO SU CONTENIDO */
+  padding: 4px 0;            /* menos altura */
+}
 
+/* Ajustar tamaño del texto 'Fecha del partido:' */
+.bloque-fecha label {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Input más pequeño */
+.fecha-input {
+  width: 95px !important;    /* 👈 más estrecho */
+  height: 26px;
+  font-size: 13px;
+  padding: 2px 4px;
+}
+
+/* Botón Guardar Fecha más compacto */
+.btn-guardar-fecha {
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+  height: 26px !important;
+  line-height: 16px !important;
+  border-radius: 5px !important;
+  background: #3498db !important;
+}
 </style>
 </head>
 <body>
