@@ -182,32 +182,42 @@
 }
 
 
-/* ✅ NIVEL 2 → Sets + nombres + Guardar en otra fila */
+
+/* Fila del nivel 2: sets + nombres siempre alineados */
 .nivel2 {
-  width: 100%;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;               /* ❗ No permitir que el nivel se rompa */
 }
 
-/* Input más pequeño */
-.fecha-input {
-  width: 90px !important;    /* 👈 más estrecho */
-  height: 26px;
-  font-size: 12px;
-  padding: 2px 4px;
+/* Marcador con ancho fijo */
+.nivel2 .marcador {
+  min-width: 90px;                /* ❗ Ajusta si quieres más o menos */
+  display: flex;
+  gap: 4px;
 }
 
-/* Botón Guardar Fecha más compacto */
-.btn-guardar-fecha {
-  padding: 4px 8px !important;
-  font-size: 12px !important;
-  height: 26px !important;
-  line-height: 16px !important;
-  border-radius: 5px !important;
+/* El bloque de nombres ocupa todo el espacio restante */
+.nivel2 .nombres {
+  flex: 1;                         /* ❗ Esto permite que se adapte */
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  word-break: break-word;          /* ❗ Permite salto interno controlado */
+  white-space: normal;             /* ❗ Nombres largos se rompen SOLO aquí */
 }
+
+/* Botón guardar → Su propia fila */
+.nivel2 .btn-guardar {
+  width: 100%;
+  margin-top: 10px;
+}
+
+
+
 </style>
 </head>
 <body>
